@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -56,17 +55,18 @@ func filter(v any) any {
 	return nil
 }
 
-func run() error {
+func run() (err error) {
 	flag.Parse()
-	if flag.NArg() == 0 {
-		return errors.New("please specify a file name")
-	}
-	b, err := os.ReadFile(flag.Arg(0))
-	if err != nil {
-		return err
+	f := os.Stdin
+	if flag.NArg() == 1 {
+		f, err = os.Open(flag.Arg(0))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
 	}
 	var v any
-	if err := json.Unmarshal(b, &v); err != nil {
+	if err := json.NewDecoder(f).Decode(&v); err != nil {
 		return err
 	}
 	enc := json.NewEncoder(os.Stdout)
