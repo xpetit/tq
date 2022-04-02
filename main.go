@@ -28,28 +28,24 @@ func filter(v any) any {
 			return x
 		}
 	case map[string]any:
-		if len(x) > 0 {
-			m := map[string]any{}
-			for k, v := range x {
-				if v := filter(v); v != nil {
-					m[k] = v
-				}
-			}
-			if len(m) > 0 {
-				return m
+		m := map[string]any{}
+		for k, v := range x {
+			if v := filter(v); v != nil {
+				m[k] = v
 			}
 		}
+		if len(m) > 0 {
+			return m
+		}
 	case []any:
-		if len(x) > 0 && *limit > 0 {
-			var vv []any
-			for _, v := range x[:min(len(x), int(*limit))] {
-				if v := filter(v); v != nil {
-					vv = append(vv, v)
-				}
+		var vv []any
+		for _, v := range x[:min(len(x), int(*limit))] {
+			if v := filter(v); v != nil {
+				vv = append(vv, v)
 			}
-			if len(vv) > 0 {
-				return vv
-			}
+		}
+		if len(vv) > 0 {
+			return vv
 		}
 	}
 	return nil
