@@ -7,13 +7,6 @@ import (
 	"os"
 )
 
-func min(x, y int) int {
-	if x < y {
-		return x
-	}
-	return y
-}
-
 var (
 	empty = flag.Bool("empty", false, "Leave the empty strings")
 	limit = flag.Uint("limit", 1, "Maximum number of elements in an array")
@@ -39,12 +32,11 @@ func filter(v any) any {
 		}
 	case []any:
 		var vv []any
-		limit := min(len(x), int(*limit))
 		for _, v := range x {
 			if v := filter(v); v != nil {
 				vv = append(vv, v)
 			}
-			if len(vv) == limit {
+			if len(vv) == int(*limit) {
 				break
 			}
 		}
