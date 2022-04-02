@@ -16,8 +16,8 @@ func min(x, y int) int {
 }
 
 var (
-	Empty = flag.Bool("empty", false, "Leave the empty strings")
-	Limit = flag.Uint("limit", 1, "Maximum number of elements in an array")
+	empty = flag.Bool("empty", false, "Leave the empty strings")
+	limit = flag.Uint("limit", 1, "Maximum number of elements in an array")
 )
 
 func filter(v any) any {
@@ -25,7 +25,7 @@ func filter(v any) any {
 	default:
 		return v
 	case string:
-		if x != "" || *Empty {
+		if x != "" || *empty {
 			return x
 		}
 	case map[string]any:
@@ -41,9 +41,9 @@ func filter(v any) any {
 			}
 		}
 	case []any:
-		if len(x) > 0 && *Limit > 0 {
+		if len(x) > 0 && *limit > 0 {
 			var vv []any
-			for _, v := range x[:min(len(x), int(*Limit))] {
+			for _, v := range x[:min(len(x), int(*limit))] {
 				if v := filter(v); v != nil {
 					vv = append(vv, v)
 				}
