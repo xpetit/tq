@@ -33,11 +33,11 @@ func filter(v any) any {
 	case []any:
 		var vv []any
 		for _, v := range x {
-			if v := filter(v); v != nil {
-				vv = append(vv, v)
-			}
 			if len(vv) == int(*limit) {
 				break
+			}
+			if v := filter(v); v != nil {
+				vv = append(vv, v)
 			}
 		}
 		if len(vv) > 0 {
