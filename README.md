@@ -2,6 +2,12 @@
 
 `tq` filters out empty objets and arrays from JSON data. It also filters empty strings (configurable) and shows one value per array (configurable).
 
+## Installation
+
+```
+go install github.com/xpetit/tq@latest
+```
+
 ## Usage
 
 ```
