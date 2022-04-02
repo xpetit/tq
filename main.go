@@ -39,9 +39,13 @@ func filter(v any) any {
 		}
 	case []any:
 		var vv []any
-		for _, v := range x[:min(len(x), int(*limit))] {
+		limit := min(len(x), int(*limit))
+		for _, v := range x {
 			if v := filter(v); v != nil {
 				vv = append(vv, v)
+			}
+			if len(vv) == limit {
+				break
 			}
 		}
 		if len(vv) > 0 {
