@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -49,21 +50,31 @@ func filter(v any) any {
 
 func run() (err error) {
 	flag.Parse()
-	f := os.Stdin
-	if flag.NArg() == 1 {
-		f, err = os.Open(flag.Arg(0))
-		if err != nil {
+	input := io.Reader(os.Stdin)
+	if flag.NArg() > 0 {
+		var readers []io.Reader
+		for _, arg := range flag.Args() {
+			f, err := os.Open(arg)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			readers = append(readers, f)
+		}
+		input = io.MultiReader(readers...)
+	}
+	for dec := json.NewDecoder(input); dec.More(); {
+		var v any
+		if err := dec.Decode(&v); err != nil {
 			return err
 		}
-		defer f.Close()
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetEscapeHTML(false)
+		if err := enc.Encode(filter(v)); err != nil {
+			return err
+		}
 	}
-	var v any
-	if err := json.NewDecoder(f).Decode(&v); err != nil {
-		return err
-	}
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetEscapeHTML(false)
-	return enc.Encode(filter(v))
+	return nil
 }
 
 func main() {
