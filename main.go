@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -68,9 +69,14 @@ func run() (err error) {
 		if err := dec.Decode(&v); err != nil {
 			return err
 		}
-		enc := json.NewEncoder(os.Stdout)
+		var b1, b2 bytes.Buffer
+		enc := json.NewEncoder(&b1)
 		enc.SetEscapeHTML(false)
 		if err := enc.Encode(filter(v)); err != nil {
+			return err
+		} else if err := json.Indent(&b2, b1.Bytes(), "", "  "); err != nil {
+			return err
+		} else if _, err := io.Copy(os.Stdout, &b2); err != nil {
 			return err
 		}
 	}

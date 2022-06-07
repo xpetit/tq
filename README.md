@@ -32,7 +32,7 @@ cat file.json | jq
 > ```
 
 ```
-tq file.json | jq
+tq file.json
 ```
 
 > ```json
@@ -48,7 +48,7 @@ tq file.json | jq
 > ```
 
 ```
-tq -empty -limit=2 file.json | jq
+tq -empty -limit=2 file.json
 ```
 
 > ```json
