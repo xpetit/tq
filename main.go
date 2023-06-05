@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
-	"fmt"
-	"io"
 	"os"
+
+	. "github.com/xpetit/x/v2"
 )
 
 var (
@@ -49,43 +48,14 @@ func filter(v any) any {
 	return nil
 }
 
-func run() (err error) {
-	flag.Parse()
-	input := io.Reader(os.Stdin)
-	if flag.NArg() > 0 {
-		var readers []io.Reader
-		for _, arg := range flag.Args() {
-			f, err := os.Open(arg)
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-			readers = append(readers, f)
-		}
-		input = io.MultiReader(readers...)
-	}
-	for dec := json.NewDecoder(input); dec.More(); {
-		var v any
-		if err := dec.Decode(&v); err != nil {
-			return err
-		}
-		var b1, b2 bytes.Buffer
-		enc := json.NewEncoder(&b1)
-		enc.SetEscapeHTML(false)
-		if err := enc.Encode(filter(v)); err != nil {
-			return err
-		} else if err := json.Indent(&b2, b1.Bytes(), "", "  "); err != nil {
-			return err
-		} else if _, err := io.Copy(os.Stdout, &b2); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	flag.Parse()
+	for dec := json.NewDecoder(os.Stdin); dec.More(); {
+		var v any
+		C(dec.Decode(&v))
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetEscapeHTML(false)
+		enc.SetIndent("", "  ")
+		C(enc.Encode(filter(v)))
 	}
 }
