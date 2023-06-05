@@ -50,12 +50,12 @@ func filter(v any) any {
 
 func main() {
 	flag.Parse()
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "  ")
 	for dec := json.NewDecoder(os.Stdin); dec.More(); {
 		var v any
 		C(dec.Decode(&v))
-		enc := json.NewEncoder(os.Stdout)
-		enc.SetEscapeHTML(false)
-		enc.SetIndent("", "  ")
 		C(enc.Encode(filter(v)))
 	}
 }
